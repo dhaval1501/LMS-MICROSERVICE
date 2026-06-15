@@ -1,0 +1,33 @@
+
+services:
+
+#  user-service:
+#    build: ./user-service
+#    ports:
+#      - "8081:8081"
+#    networks:
+#      - lms-network
+
+  postgres-db:
+    image: postgres:17
+    shm_size: 128mb
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: dhaval
+      POSTGRES_PASSWORD: dhaval123
+      POSTGRES_DB: userdb
+    networks:
+      - lms-network
+    volumes:
+      - postgres-lms-data:/var/lib/postgresql/data
+
+networks:
+  lms-network:
+
+volumes:
+  postgres-lms-data:
+
+
+
+  

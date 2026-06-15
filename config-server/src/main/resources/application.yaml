@@ -1,0 +1,23 @@
+
+server:
+  port: 8088
+
+spring:
+  application:
+    name: config-server
+
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/dhaval1501/Config-Server
+          clone-on-start: true
+          default-label: master   #
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+

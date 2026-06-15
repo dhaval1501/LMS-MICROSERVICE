@@ -1,0 +1,125 @@
+
+spring:
+  application:
+    name: api-gateway
+  config:
+    import: configserver:http://localhost:8088
+
+
+#
+#spring:
+#  application:
+#    name: api-gateway
+#
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: student-service
+#          uri: lb://student-service
+#          predicates:
+#            - Path=/api/student/**
+#          filters:
+#            - StripPrefix=2
+#
+#        - id: book-service
+#          uri: lb://book-service
+#          predicates:
+#            - Path=/api/book/**
+#          filters:
+#            - StripPrefix=2
+#
+#        - id: loan-service
+#          uri: lb://loan-service
+#          predicates:
+#            - Path=/api/loan/**
+#          filters:
+#            - StripPrefix=2
+#
+#        # Swagger aggregation routes
+#
+#        - id: student-service-docs
+#          uri: lb://student-service
+#          predicates:
+#            - Path=/aggregate/student-service/v3/api-docs
+#          filters:
+#            - RewritePath=/aggregate/student-service/(?<remaining>.*), /$\{remaining}
+#
+#        - id: book-service-docs
+#          uri: lb://book-service
+#          predicates:
+#            - Path=/aggregate/book-service/v3/api-docs
+#          filters:
+#            - RewritePath=/aggregate/book-service/(?<remaining>.*), /$\{remaining}
+#
+#        - id: loan-service-docs
+#          uri: lb://loan-service
+#          predicates:
+#            - Path=/aggregate/loan-service/v3/api-docs
+#          filters:
+#            - RewritePath=/aggregate/loan-service/(?<remaining>.*), /$\{remaining}
+#
+#eureka:
+#  client:
+#    register-with-eureka: true
+#    fetch-registry: true
+#    service-url:
+#      defaultZone: http://localhost:8761/eureka/
+#
+## Springdoc is TOP LEVEL — not under spring
+#springdoc:
+#  swagger-ui:
+#    path: /swagger-ui.html
+#    urls:
+#      - name: student-service
+#        url: /aggregate/student-service/v3/api-docs
+#      - name: book-service
+#        url: /aggregate/book-service/v3/api-docs
+#      - name: loan-service
+#        url: /aggregate/loan-service/v3/api-docs
+#
+#
+#
+#
+#
+#
+##server:
+##  port: 8080
+##
+##spring:
+##  application:
+##    name: api-gateway
+##
+##springdoc:
+##  swagger-ui:
+##    path: /swagger-ui.html
+##    urls:
+##      - name: student-service
+##        url: /aggregate/user-service/v3/api-docs
+##      - name: book-service
+##        url: /aggregate/book-service/v3/api-docs
+##      - name: loan-service
+##        url: /aggregate/loan-service/v3/api-docs
+##
+##  cloud:
+##    gateway:
+##      routes:
+##        - id: book-service
+##          uri: lb://book-service
+##          predicates:
+##            - Path=/api/book/**
+##          filters:
+##            - StripPrefix=2
+##
+##        - id: student-service
+##          uri: lb://student-service
+##          predicates:
+##            - Path=/api/student/**
+##          filters:
+##            - StripPrefix=2
+##
+##        - id: loan-service
+##          uri: lb://loan-service
+##          predicates:
+##            - Path=/api/loan/**
+##          filters:
+##            - StripPrefix=2
