@@ -1,1 +1,22 @@
-.idea
+# Maven — covers ALL services
+**/target/
+*.class
+*.jar
+
+# IntelliJ — covers ALL services
+.idea/
+**/*.iml
+*.iws
+*.ipr
+
+# Mac — covers ALL services
+.DS_Store
+**/.DS_Store
+
+# Logs
+*.log
+**/logs/
+
+# Environment
+.env
+**/application-prod.yaml
