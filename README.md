@@ -289,6 +289,18 @@ spring:
 | [Config-Server](https://github.com/dhaval1501/Config-Server) | Centralized config repo |
 
 ---
+## 🗺️ Roadmap
+
+Features and improvements planned for future development:
+
+- [ ] **Spring Security + JWT** — Authentication and authorization with role-based access control
+- [ ] **Redis Cache** — Caching frequently accessed data to improve response times
+- [ ] **Liquibase** — Database version control and migration management
+- [ ] **Resilience4j** — Circuit breaker, retry, and rate limiter for fault tolerance
+- [ ] **Saga Pattern** — Distributed transaction management across microservices
+- [ ] **Apache Kafka** — Async event-driven communication between services
+- [ ] **CI/CD Pipeline** — Automated build, test, and deployment with GitHub Actions
+- [ ] **Kubernetes** — Container orchestration for auto-scaling and self-healing
 
 <div align="center">
 
