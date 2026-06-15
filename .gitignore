@@ -20,3 +20,5 @@
 # Environment
 .env
 **/application-prod.yaml
+
+**/HELP.md
