@@ -5,9 +5,14 @@
 ![Java](https://img.shields.io/badge/Java-17-orange?style=for-the-badge&logo=java)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.4.6-green?style=for-the-badge&logo=springboot)
 ![Spring Cloud](https://img.shields.io/badge/Spring_Cloud-2024.0.1-green?style=for-the-badge&logo=spring)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-blue?style=for-the-badge&logo=postgresql)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-336791?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-Basic-blue?style=for-the-badge&logo=docker)
 ![Swagger](https://img.shields.io/badge/Swagger-UI-green?style=for-the-badge&logo=swagger)
+![Maven](https://img.shields.io/badge/Maven-3.9-C71A36?style=for-the-badge&logo=apachemaven&logoColor=C71A36)
+
+[//]: # (![Kafka]&#40;https://img.shields.io/badge/Kafka-555555?style=for-the-badge&logo=apachekafka&logoColor=white&#41;)
+[//]: # (https://img.shields.io/badge/Kubernetes-555555?style=for-the-badge&logo=kubernetes&logoColor=326CE5)
+[//]: # (![Redis]&#40;https://img.shields.io/badge/Redis-7.2-DC382D?style=for-the-badge&logo=redis&logoColor=DC382D&#41;)
 
 A production-ready **Library Management System** built with **Spring Boot Microservices Architecture**, featuring service discovery, centralized configuration, API gateway routing, and inter-service communication.
 

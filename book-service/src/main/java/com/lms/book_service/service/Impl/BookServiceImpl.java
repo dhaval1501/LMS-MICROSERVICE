@@ -2,6 +2,7 @@ package com.lms.book_service.service.Impl;
 
 import com.lms.book_service.dto.book.BookRequestDTO;
 import com.lms.book_service.dto.book.BookResponseDTO;
+import com.lms.book_service.dto.book.BookSearchDTO;
 import com.lms.book_service.dto.book.SearchBookRequestDTO;
 import com.lms.book_service.entity.Author;
 import com.lms.book_service.entity.Book;
@@ -10,6 +11,7 @@ import com.lms.book_service.mapper.BookMapper;
 import com.lms.book_service.repository.AuthorRepository;
 import com.lms.book_service.repository.BookRepository;
 import com.lms.book_service.repository.CategoryRepository;
+import com.lms.book_service.repository.specification.BookSpecification;
 import com.lms.book_service.service.BookService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.criteria.Predicate;
@@ -20,9 +22,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
@@ -44,21 +48,34 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Page<BookResponseDTO> searchBooks(SearchBookRequestDTO searchDTO) {
-        Sort sort = searchDTO.getSortBy().equalsIgnoreCase("desc")
-                ? Sort.by(searchDTO.getSortBy()).descending()
-                : Sort.by(searchDTO.getSortBy()).ascending();
-
-        Pageable pageable = PageRequest.of(searchDTO.getPage(), searchDTO.getSize(), sort);
-
-        Specification<Book> specification =
-               this.searchBooksSpe(searchDTO,pageable);
+    public Page<BookResponseDTO> getAllPageableBooks(BookSearchDTO searchDTO) {
+        Pageable pageable = setPageable(searchDTO);
 
          return bookRepository
-                .findAll(specification, pageable)
+                .findAll(BookSpecification.getSpecification(searchDTO), pageable)
                 .map(bookMapper::toDto);
     }
 
+    private  Pageable setPageable(BookSearchDTO searchDTO){
+
+        int page = searchDTO.getPage() != null ? searchDTO.getPage() : 0;
+        int size = searchDTO.getSize() != null ? searchDTO.getSize() : 10;
+
+        String sortBy= StringUtils.hasText(searchDTO.getSortBy()) ? searchDTO.getSortBy() : "id";
+
+        Sort.Direction direction = Sort.Direction.DESC;
+
+        if (StringUtils.hasText(searchDTO.getSortDirection())) {
+            direction = Sort.Direction.fromString(
+                    searchDTO.getSortDirection().toUpperCase()
+            );
+        }
+        Sort sorting = Sort.by(
+                Sort.Order.by(sortBy).with(direction)
+        );
+
+        return PageRequest.of(page,size,sorting);
+    }
 
 
     @Override
@@ -94,48 +111,7 @@ public class BookServiceImpl implements BookService {
         return bookMapper.toDto(bookRepository.save(book));
     }
 
-    public  Specification<Book> searchBooksSpe(SearchBookRequestDTO dto, Pageable pageable) {
 
-        return (root, query, cb) -> {
-
-            List<Predicate> predicates = new ArrayList<>();
-
-            if (dto.getTitle() != null && !dto.getTitle().isBlank()) {
-                predicates.add(
-                        cb.like(
-                                cb.lower(root.get("title")),
-                                "%" + dto.getTitle().toLowerCase() + "%"
-                        )
-                );
-            }
-
-            if (dto.getAuthorId() != null) {
-                predicates.add(
-                        cb.equal(
-                                root.get("author").get("id"),
-                                dto.getAuthorId()
-                        )
-                );
-            }
-
-            if (dto.getCategoryId() != null) {
-                predicates.add(
-                        cb.equal(
-                                root.get("category").get("id"),
-                                dto.getCategoryId()
-                        )
-                );
-            }
-
-            if (dto.getIsbn() != null && !dto.getIsbn().isBlank()) {
-                predicates.add(
-                        cb.equal(root.get("isbn"), dto.getIsbn())
-                );
-            }
-
-            return cb.and(predicates.toArray(new Predicate[0]));
-        };
-    }
 
     @Override
     public BookResponseDTO updateBook(BookRequestDTO requestDTO) {
@@ -173,5 +149,23 @@ public class BookServiceImpl implements BookService {
                 ()->new  EntityNotFoundException("Book not found with id: "+id)
         );
         bookRepository.delete(book);
+    }
+
+    @Override
+    public List<BookResponseDTO> getAllBooks(BookSearchDTO searchDTO) {
+        return bookRepository
+                .findAll(BookSpecification.getSpecification(searchDTO))
+                .stream()
+                .map(bookMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public List<BookResponseDTO> getBookByIds(Set<Long> ids) {
+        return bookRepository
+                .findByIdIn(ids)
+                .stream()
+                .map(bookMapper::toDto)
+                .toList();
     }
 }

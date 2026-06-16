@@ -2,6 +2,7 @@ package com.lms.student_service.controller;
 
 import com.lms.student_service.dto.student.StudentRequestDTO;
 import com.lms.student_service.dto.student.StudentResponseDTO;
+import com.lms.student_service.dto.student.StudentSearchDTO;
 import com.lms.student_service.dto.student.StudentUpdateDTO;
 import com.lms.student_service.service.StudentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,12 +10,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
 
 
 @RestController()
@@ -33,19 +34,13 @@ public class StudentController {
        return new ResponseEntity<>(responseDTO, HttpStatus.CREATED);
     }
 
-    @GetMapping("/all")
-    @Operation(summary = "Get all Pageable students")
+    @PostMapping("/all")
+    @Operation(summary = "Get all Pageable students with searching and sorting")
     public ResponseEntity<Page<StudentResponseDTO>>getAllStudent(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id,desc") String[] sort
+            @RequestBody  StudentSearchDTO searchDTO
     ){
-        Sort sorting = Sort.by(
-                Sort.Order.by(sort[0]).with(Sort.Direction.fromString(sort[1]))
-        );
 
-        Pageable pageable =  PageRequest.of(page, size,sorting);
-        Page<StudentResponseDTO> responseDTOPage=studentService.getAll(pageable);
+        Page<StudentResponseDTO> responseDTOPage=studentService.getAllPageableStudents(searchDTO);
         return new ResponseEntity<>(responseDTOPage,HttpStatus.OK);
     }
 
@@ -70,6 +65,20 @@ public class StudentController {
 
         StudentResponseDTO responseDTO =  studentService.getById(id);
         return new ResponseEntity<>(responseDTO,HttpStatus.OK);
+    }
+
+    @PostMapping("/bulk")
+    @Operation(summary = "Get All Students ")
+    public ResponseEntity<List<StudentResponseDTO>> getAllBooks(@RequestBody StudentSearchDTO searchDTO) {
+        List<StudentResponseDTO> responseDTOList=studentService.getStudentsBySearch(searchDTO);
+        return new ResponseEntity<>(responseDTOList,HttpStatus.OK);
+    }
+
+    @PostMapping("/by-ids")
+    @Operation(summary = "Get All Books By Ids ")
+    public ResponseEntity<List<StudentResponseDTO>> getAllBooks(@RequestBody Set<Long> ids) {
+        List<StudentResponseDTO> responseDTOList=studentService.getStudentsByIds(ids);
+        return new ResponseEntity<>(responseDTOList,HttpStatus.OK);
     }
 
 //    @GetMapping("/byName/{name}")

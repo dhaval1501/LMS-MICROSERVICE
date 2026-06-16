@@ -2,6 +2,7 @@ package com.lms.book_service.controller;
 
 import com.lms.book_service.dto.book.BookRequestDTO;
 import com.lms.book_service.dto.book.BookResponseDTO;
+import com.lms.book_service.dto.book.BookSearchDTO;
 import com.lms.book_service.dto.book.SearchBookRequestDTO;
 import com.lms.book_service.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
 
 
 @RequiredArgsConstructor
@@ -26,12 +30,13 @@ public class BookController {
         BookResponseDTO responseDTO=bookService.createBook(requestDTO);
        return new ResponseEntity<BookResponseDTO>(responseDTO, HttpStatus.CREATED);
     }
-    @PostMapping("/search")
-    @Operation(summary = "Search Books with Category or Author")
-    public Page<BookResponseDTO> searchBooks(@RequestBody SearchBookRequestDTO searchDTO) {
-
-        return bookService.searchBooks(searchDTO);
+    @PostMapping("/all")
+    @Operation(summary = "Search Books with Pagination")
+    public ResponseEntity<Page<BookResponseDTO>> getAllPageableBooks(@RequestBody BookSearchDTO searchDTO) {
+        Page<BookResponseDTO> page=bookService.getAllPageableBooks(searchDTO);
+        return new ResponseEntity<>(page,HttpStatus.OK);
     }
+
 //
 //    @PutMapping("/update/{id}")
 //    @CrossOrigin( origins = "http://Localhost:4200")
@@ -54,6 +59,22 @@ public class BookController {
         return new ResponseEntity<>(responseDTO,HttpStatus.OK);
 
     }
+
+    @PostMapping("/bulk")
+    @Operation(summary = "Get All Books ")
+    public ResponseEntity<List<BookResponseDTO>> getAllBooks(@RequestBody BookSearchDTO searchDTO) {
+        List<BookResponseDTO> responseDTOList=bookService.getAllBooks(searchDTO);
+        return new ResponseEntity<>(responseDTOList,HttpStatus.OK);
+    }
+
+    @PostMapping("/by-ids")
+    @Operation(summary = "Get All Books By Ids ")
+    public ResponseEntity<List<BookResponseDTO>> getAllBooks(@RequestBody Set<Long> ids) {
+        List<BookResponseDTO> responseDTOList=bookService.getBookByIds(ids);
+        return new ResponseEntity<>(responseDTOList,HttpStatus.OK);
+    }
+
+
 
     @PostMapping("/issue/{id}")
     public ResponseEntity<BookResponseDTO> issueBook(@PathVariable Long id){

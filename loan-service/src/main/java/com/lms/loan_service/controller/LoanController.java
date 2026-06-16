@@ -2,8 +2,10 @@ package com.lms.loan_service.controller;
 
 import com.lms.loan_service.dto.loan.LoanRequestDTO;
 import com.lms.loan_service.dto.loan.LoanResponseDTO;
+import com.lms.loan_service.dto.loan.LoanSearchDTO;
 import com.lms.loan_service.service.LoanService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +20,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/loan")
+@Tag(name= "Loan Controller" ,description = "APIs for Loan Management")
 public class LoanController {
 
     private final LoanService loanService;
@@ -43,14 +46,19 @@ public class LoanController {
         return new ResponseEntity<>(responseDTO, HttpStatus.OK);
     }
 
-    @GetMapping("/all")
-    @Operation(summary = "get all entries")
+    @PostMapping("/all")
+    @Operation(summary = "Get Loans By With Search and Sort")
     public ResponseEntity<Page<LoanResponseDTO>> geAllLoan(
-            @RequestParam int page,
-            @RequestParam int size
+         @RequestBody LoanSearchDTO searchDTO
     ) {
-        Pageable pageable=  PageRequest.of(page,size);
-        Page<LoanResponseDTO> responseDTOList=loanService.getAllLoan(pageable);
+        Page<LoanResponseDTO> responseDTOList=loanService.getAllLoan(searchDTO);
         return new ResponseEntity<>(responseDTOList, HttpStatus.OK);
+    }
+
+    @PostMapping("/student-id/{id}")
+    @Operation(summary = "Get Loans By Student ID")
+    public ResponseEntity<Page<LoanResponseDTO>> getLoanByStudentId(@RequestBody LoanSearchDTO searchDTO){
+        Page<LoanResponseDTO> dtoPage= loanService.getLoansByStudent(searchDTO);
+        return new ResponseEntity<>(dtoPage,HttpStatus.OK);
     }
 }

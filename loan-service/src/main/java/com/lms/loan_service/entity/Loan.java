@@ -22,27 +22,29 @@ public class Loan {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false,name = "student_id")
     private Long studentId;
 
-    @Column(nullable = false)
+    @Column(nullable = false,name = "book_id")
     private Long bookId;
 
-    @Column(nullable = false)
+    @Column(nullable = false,name = "issue_date")
     private LocalDate issueDate;
 
-    @Column(nullable = false)
+    @Column(nullable = false,name = "due_date")
     private LocalDate dueDate;
 
+    @Column(name = "return_date")
     private LocalDate returnDate;
 
     @Enumerated(EnumType.STRING)
     private LoanStatus status;
 
     @CreationTimestamp
-    @Column(updatable = false)
+    @Column(updatable = false,name = "created_at")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
+    @Column(name = "update_at")
     private LocalDateTime updatedAt;
 }

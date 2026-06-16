@@ -10,10 +10,15 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "address")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Table(name = "address",
+indexes = {
+        @Index(name = "idx_address_city",columnList = "city"),
+        @Index(name = "idx_address_pin_code",columnList = "pin_code")
+}
+)
 public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,9 +34,10 @@ public class Address {
     private Student student;
 
     @CreationTimestamp
-    @Column(updatable = false)
+    @Column(updatable = false,name = "create_at")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
+    @Column(name = "update_at")
     private LocalDateTime updatedAt;
 }

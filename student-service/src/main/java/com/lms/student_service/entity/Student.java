@@ -12,10 +12,17 @@ import java.time.LocalDateTime;
 
 
 @Entity
-@Table(name = "t_student")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Table(name = "t_student",
+        indexes = {
+        @Index( name = "idx_student_first_name",columnList ="first_name" ),
+        @Index( name = "idx_student_last_name",columnList ="last_name" ),
+        @Index( name = "idx_student_number",columnList ="number" ),
+        @Index( name = "idx_student_email",columnList ="email" )
+        }
+)
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,9 +45,10 @@ public class Student {
     private String email;
 
     @CreationTimestamp
-    @Column(updatable = false)
+    @Column(updatable = false,name = "create_at")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
+    @Column(name = "update_at")
     private LocalDateTime updatedAt;
 }

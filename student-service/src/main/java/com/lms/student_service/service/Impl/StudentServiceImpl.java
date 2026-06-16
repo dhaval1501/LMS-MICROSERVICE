@@ -2,19 +2,25 @@ package com.lms.student_service.service.Impl;
 
 import com.lms.student_service.dto.student.StudentRequestDTO;
 import com.lms.student_service.dto.student.StudentResponseDTO;
+import com.lms.student_service.dto.student.StudentSearchDTO;
 import com.lms.student_service.dto.student.StudentUpdateDTO;
 import com.lms.student_service.entity.Student;
 import com.lms.student_service.mapper.StudentMapper;
 import com.lms.student_service.repository.StudentRepository;
+import com.lms.student_service.repository.specification.StudentSpecification;
 import com.lms.student_service.service.StudentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Set;
 
 
 @Service
@@ -34,8 +40,29 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Page<StudentResponseDTO> getAll(Pageable pageable) {
-        Page<Student> studentPage = studentRepository.findAll(pageable);
+    public Page<StudentResponseDTO> getAllPageableStudents(StudentSearchDTO searchDTO) {
+
+        int page = searchDTO.getPage() != null ? searchDTO.getPage() : 0;
+        int size = searchDTO.getSize() != null ? searchDTO.getSize() : 10;
+
+        String sortBy = StringUtils.hasText(searchDTO.getSortBy())
+                ? searchDTO.getSortBy()
+                : "id";
+
+        Sort.Direction direction = Sort.Direction.DESC;
+
+        if (StringUtils.hasText(searchDTO.getSortDirection())) {
+            direction = Sort.Direction.fromString(
+                    searchDTO.getSortDirection().toUpperCase()
+            );
+        }
+        Sort sorting = Sort.by(
+                Sort.Order.by(sortBy).with(direction)
+        );
+
+        Pageable pageable =  PageRequest.of(page,size,sorting);
+
+        Page<Student> studentPage = studentRepository.findAll(StudentSpecification.getSpecification(searchDTO),pageable);
         return studentPage.map(studentMapper::toDto);
 
     }
@@ -72,6 +99,23 @@ public class StudentServiceImpl implements StudentService {
 
     }
 
+    @Override
+    public List<StudentResponseDTO> getStudentsBySearch(StudentSearchDTO searchDTO) {
+        return studentRepository
+                .findAll(StudentSpecification.getSpecification(searchDTO))
+                .stream()
+                .map(studentMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public List<StudentResponseDTO> getStudentsByIds(Set<Long> ids) {
+        return studentRepository
+                .findByIdIn(ids)
+                .stream()
+                .map(studentMapper::toDto)
+                .toList();
+    }
     @Override
     public StudentResponseDTO getByEmail(String email) {
         Student student = studentRepository.findByEmail(email)
