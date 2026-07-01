@@ -28,6 +28,7 @@
         <module>service-registry</module>
         <module>api-gateway</module>
         <module>config-server</module>
+        <module>lms-common</module>
     </modules>
 
     <properties>

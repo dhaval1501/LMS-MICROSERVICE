@@ -11,6 +11,7 @@ import com.lms.loan_service.exception.BookUnavailableException;
 import com.lms.loan_service.exception.DuplicateResourceException;
 import com.lms.loan_service.exception.ResourceNotFoundException;
 import com.lms.loan_service.exception.ServiceUnavailableException;
+import com.lms.loan_service.kafka.producer.LoanEventProducer;
 import com.lms.loan_service.mapper.LoanMapper;
 import com.lms.loan_service.repository.LoanRepository;
 import com.lms.loan_service.client.BookClient;
@@ -19,6 +20,7 @@ import com.lms.loan_service.service.LoanService;
 import com.lms.loan_service.client.StudentClient;
 import feign.FeignException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,12 +36,14 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class LoanServiceImpl implements LoanService {
 
     private final LoanRepository loanRepository;
     private final LoanMapper loanMapper;
     private final BookClient bookClient;
     private final StudentClient studentClient;
+    private final LoanEventProducer loanEventProducer;
 
     private StudentResponseDTO getStudentByClient(Long studentId){
         try {
@@ -165,13 +169,21 @@ public class LoanServiceImpl implements LoanService {
 
             loanResponseDTO.setBook(bookResponseDTO);
             loanResponseDTO.setStudent(studentResponseDTO);
+            if (2==2){
+                throw new RuntimeException("expicitlly thrwo erroe");
+            }
             return loanResponseDTO;
         }catch (Exception ex) {
 
-            // COMPENSATION (ROLLBACK)
-            returnBookByClient(requestDTO.getBookId());
+            // COMPENSATION (ROLLBACK BY KAFKA)
+//            returnBookByClient(requestDTO.getBookId());
+            loanEventProducer.publishBookRollbackEvent(
+                    requestDTO.getBookId(),
+                    requestDTO.getStudentId(),
+                    ex.getMessage()
+            );
 
-            throw new RuntimeException("Saga failed, rolled back");
+            throw new RuntimeException("Unable to complete loan request. Your book reservation is being released automatically.");
         }
     }
 

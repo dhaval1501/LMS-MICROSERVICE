@@ -1,0 +1,40 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+
+  - job_name: "api-gateway"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets:
+          - "host.docker.internal:8080"
+
+  - job_name: "student-service"
+    metrics_path: "/api/v1/students/actuator/prometheus"
+    static_configs:
+      - targets:
+          - "host.docker.internal:8081"
+
+  - job_name: "book-service"
+    metrics_path: "/api/v1/books/actuator/prometheus"
+    static_configs:
+      - targets:
+          - "host.docker.internal:8082"
+
+  - job_name: "loan-service"
+    metrics_path: "/api/v1/loans/actuator/prometheus"
+    static_configs:
+      - targets:
+          - "host.docker.internal:8083"
+
+  - job_name: "service-registry"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets:
+          - "host.docker.internal:8761"
+
+  - job_name: "config-server"
+    metrics_path: "/actuator/prometheus"
+    static_configs:
+      - targets:
+          - "host.docker.internal:8088"

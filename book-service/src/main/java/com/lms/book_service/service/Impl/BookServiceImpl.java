@@ -3,7 +3,6 @@ package com.lms.book_service.service.Impl;
 import com.lms.book_service.dto.book.BookRequestDTO;
 import com.lms.book_service.dto.book.BookResponseDTO;
 import com.lms.book_service.dto.book.BookSearchDTO;
-import com.lms.book_service.dto.book.SearchBookRequestDTO;
 import com.lms.book_service.entity.Author;
 import com.lms.book_service.entity.Book;
 import com.lms.book_service.entity.Category;
@@ -14,13 +13,12 @@ import com.lms.book_service.repository.CategoryRepository;
 import com.lms.book_service.repository.specification.BookSpecification;
 import com.lms.book_service.service.BookService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.criteria.Predicate;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -30,6 +28,7 @@ import java.util.Set;
 
 @RequiredArgsConstructor
 @Service
+@Transactional
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
