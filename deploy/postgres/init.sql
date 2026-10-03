@@ -1,0 +1,2 @@
+CREATE DATABASE bookdb;
+CREATE DATABASE loandb;
