@@ -22,3 +22,5 @@
 **/application-prod.yaml
 
 **/HELP.md
+
+deploy/.env.example
