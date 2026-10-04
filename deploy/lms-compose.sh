@@ -11,7 +11,7 @@ case "${1:-}" in
     "${COMPOSE[@]}" up -d
     ;;
   stop)
-    "${COMPOSE[@]}" down
+    "${COMPOSE[@]}" stop
     ;;
   *)
     echo "Usage: $0 {start|stop}" >&2

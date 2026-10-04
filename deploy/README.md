@@ -64,8 +64,8 @@ docker compose --env-file deploy/.env -f compose.dev.yml ps
 
 ## Start and stop Compose automatically with EC2
 
-To have systemd start the stack during Ubuntu boot and gracefully run
-the provided stop script during shutdown, install the script and systemd
+To have systemd start the stack during Ubuntu boot and stop (without removing)
+the containers during shutdown, install the script and systemd
 service on EC2. This assumes the repository is at
 `/home/ubuntu/LMS-MICROSERVICE`:
 
@@ -79,8 +79,8 @@ sudo systemctl status lms-compose.service
 
 Afterward, stopping the EC2 instance through AWS stops the stack through
 systemd; starting the instance runs the script to start it again. The script's
-`stop` action uses `docker compose down`, which preserves named volumes because
-it does not use `-v`. To disable this automation:
+`stop` action uses `docker compose stop`, so containers remain present and all
+data volumes are preserved. To disable this automation:
 
 ```bash
 sudo systemctl disable --now lms-compose.service
