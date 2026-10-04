@@ -31,10 +31,13 @@ runs, while Compose supplies
 - Use an EC2 instance with enough memory for six Spring Boot processes plus
   PostgreSQL, Kafka, Redis, Zipkin, Prometheus, and Grafana. A small free-tier
   instance may run out of memory; check `free -h` before starting the full stack.
-- Keep SSH restricted to your own IP. Allow inbound TCP port `8080` only if you
-  want the API to be reachable from the internet.
-- Grafana listens on the EC2 loopback interface only; do not open port `3000`
-  in the security group.
+- Keep SSH restricted to your own IP. The API and monitoring dashboards are
+  exposed publicly by this development setup; do not use it for sensitive or
+  production data.
+- Grafana requires login, but Prometheus and Zipkin have no authentication in
+  this setup. Anyone who can reach the instance can inspect metrics and traces.
+  Restrict dashboard ports to trusted IPs where possible, and use a reverse
+  proxy with HTTPS and authentication for a production deployment.
 - The API is exposed without application authentication in this development
   configuration. Do not use it for sensitive or production data.
 
@@ -59,22 +62,22 @@ docker compose --env-file deploy/.env -f compose.dev.yml up -d
 docker compose --env-file deploy/.env -f compose.dev.yml ps
 ```
 
-Only the API Gateway is publicly published on port `8080`. PostgreSQL, Redis,
-Kafka, Prometheus, Eureka, and Config Server are reachable only on the private
-Compose network. Grafana is bound to EC2 loopback and can be opened from your
-Mac through an SSH tunnel:
+The API Gateway and dashboards are published on ports `8080`, `3000`, `9090`,
+and `9411`. PostgreSQL, Redis, Kafka, Eureka, and Config Server remain reachable
+only on the private Compose network. Add inbound TCP rules for those four
+published ports to the EC2 security group. To make them reachable from any IPv4
+address, set each source to `0.0.0.0/0`; this is not recommended for dashboards.
+Grafana requires the credentials configured in `deploy/.env`, but Prometheus and
+Zipkin do not require login.
 
-```bash
-ssh -i /path/to/lms-microservices.pem -L 3000:127.0.0.1:3000 ubuntu@<EC2-public-IP>
-```
-
-Keep that SSH session open, then visit `http://localhost:3000` in your browser.
-Sign in with `GRAFANA_ADMIN_USER` and `GRAFANA_ADMIN_PASSWORD` from `deploy/.env`.
-The Prometheus data source is provisioned automatically.
+Open `http://<EC2-public-IP>:3000` for Grafana,
+`http://<EC2-public-IP>:9090` for Prometheus, and
+`http://<EC2-public-IP>:9411` for Zipkin. The Prometheus data source is
+provisioned automatically in Grafana.
 
 Prometheus scrapes the backend services, Eureka, and Config Server over the
-private Compose network. It is not published to the internet. Gateway metrics
-are not exposed because the Gateway is the public entry point.
+private Compose network. Gateway metrics are not exposed because the Gateway is
+the public entry point.
 
 If the containers are already running when you push updated files to the
 Config-Server Git repository, force-recreate them to fetch the new settings:
