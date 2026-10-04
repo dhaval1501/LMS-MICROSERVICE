@@ -11,14 +11,20 @@ the `*-dev.yaml` files in the Config-Server repository contain the development,
 monitoring, and Kafka settings together. The project-root `dev/` directory is
 only a staging folder: Config Server does not mount or load it directly.
 
-The repository's `.env.example` selects the `dev` branch. In the Config-Server
-repository, create and check out a `dev` branch, then copy the **contents** of
-the project-root `dev/` directory into the Config-Server repository root,
-replacing the matching configuration filenames. These names end in `-dev.yaml`
-to match Spring Cloud Config's `dev` profile convention. Commit and push those
-files to the `dev` branch. Do not copy the `dev/` directory as a nested
+The repository's `.env.example` selects the existing `master` branch. Copy the
+**contents** of the project-root `dev/` directory into the root of the
+Config-Server repository on `master`, replacing the matching configuration
+filenames. These names end in `-dev.yaml` to match Spring Cloud Config's `dev`
+profile convention; `dev` here is a Spring profile, not a Git branch. Commit
+and push those files to `master`. Do not copy the `dev/` directory as a nested
 directory: Config Server expects these files at the configuration repository
 root.
+
+The four application modules also have local `application-dev.yaml` files.
+They select the Config-Server label from `CONFIG_GIT_LABEL`, which defaults to
+`master`. The base `application.yaml` keeps the localhost default for local
+runs, while Compose supplies
+`CONFIG_SERVER_URL=http://config-server:8088` for the container network.
 
 ## Before starting
 
@@ -42,7 +48,7 @@ cp deploy/.env.example deploy/.env
 nano deploy/.env
 ```
 
-Confirm that `CONFIG_GIT_LABEL=dev` is set in `deploy/.env`.
+Confirm that `CONFIG_GIT_LABEL=master` is set in `deploy/.env`.
 
 Validate the Compose configuration, build the images, and start the services:
 
@@ -100,7 +106,8 @@ first start of an empty data volume. It does not rerun against an existing
 volume.
 
 If the Config Server fails to clone its Git repository, verify that the
-repository is reachable from EC2 and that `CONFIG_GIT_LABEL` exists. For a
+repository is reachable from EC2 and that the configured `CONFIG_GIT_LABEL`
+exists. For a
 private configuration repository, configure read-only Git credentials using
 Docker secrets or another secret manager; do not commit a token in `.env` or
 the Compose file.

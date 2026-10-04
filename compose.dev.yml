@@ -18,6 +18,8 @@ services:
   redis:
     image: redis:7.2-alpine
     restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD in deploy/.env}
     command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD:?Set REDIS_PASSWORD in deploy/.env}"]
     volumes:
       - redis-data:/data
@@ -102,7 +104,7 @@ services:
     restart: unless-stopped
     environment:
       SPRING_CLOUD_CONFIG_SERVER_GIT_URI: ${CONFIG_GIT_URI:-https://github.com/dhaval1501/Config-Server}
-      SPRING_CLOUD_CONFIG_SERVER_GIT_DEFAULT_LABEL: ${CONFIG_GIT_LABEL:-dev}
+      SPRING_CLOUD_CONFIG_SERVER_GIT_DEFAULT_LABEL: ${CONFIG_GIT_LABEL:-master}
       SPRING_CLOUD_CONFIG_SERVER_GIT_CLONE_ON_START: "true"
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
     depends_on:
@@ -124,7 +126,8 @@ services:
         SERVICE: student-service
     restart: unless-stopped
     environment: &spring-service-environment
-      SPRING_CONFIG_IMPORT: configserver:http://config-server:8088
+      CONFIG_SERVER_URL: http://config-server:8088
+      CONFIG_GIT_LABEL: ${CONFIG_GIT_LABEL:-master}
       SPRING_PROFILES_ACTIVE: dev
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://service-registry:8761/eureka/
       MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: health,info,prometheus
