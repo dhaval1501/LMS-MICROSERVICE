@@ -62,6 +62,30 @@ docker compose --env-file deploy/.env -f compose.dev.yml up -d
 docker compose --env-file deploy/.env -f compose.dev.yml ps
 ```
 
+## Start and stop Compose automatically with EC2
+
+To have systemd start the stack during Ubuntu boot and gracefully run
+the provided stop script during shutdown, install the script and systemd
+service on EC2. This assumes the repository is at
+`/home/ubuntu/LMS-MICROSERVICE`:
+
+```bash
+sudo install -m 755 deploy/lms-compose.sh /home/ubuntu/LMS-MICROSERVICE/deploy/lms-compose.sh
+sudo install -m 644 deploy/lms-compose.service /etc/systemd/system/lms-compose.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now lms-compose.service
+sudo systemctl status lms-compose.service
+```
+
+Afterward, stopping the EC2 instance through AWS stops the stack through
+systemd; starting the instance runs the script to start it again. The script's
+`stop` action uses `docker compose down`, which preserves named volumes because
+it does not use `-v`. To disable this automation:
+
+```bash
+sudo systemctl disable --now lms-compose.service
+```
+
 The API Gateway and dashboards are published on ports `8080`, `3000`, `9090`,
 and `9411`. PostgreSQL, Redis, Kafka, Eureka, and Config Server remain reachable
 only on the private Compose network. Add inbound TCP rules for those four

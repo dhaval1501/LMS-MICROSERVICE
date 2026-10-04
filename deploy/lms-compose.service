@@ -1,0 +1,16 @@
+[Unit]
+Description=LMS Docker Compose stack
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/home/ubuntu/LMS-MICROSERVICE
+ExecStart=/bin/bash /home/ubuntu/LMS-MICROSERVICE/deploy/lms-compose.sh start
+ExecStop=/bin/bash /home/ubuntu/LMS-MICROSERVICE/deploy/lms-compose.sh stop
+TimeoutStartSec=0
+TimeoutStopSec=120
+
+[Install]
+WantedBy=multi-user.target

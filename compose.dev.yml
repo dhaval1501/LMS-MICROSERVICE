@@ -55,13 +55,13 @@ services:
     image: openzipkin/zipkin:latest
     restart: unless-stopped
     ports:
-      - "9411:9411"
+      - "127.0.0.1:9411:9411"
 
   prometheus:
     image: prom/prometheus:v3.5.0
     restart: unless-stopped
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.path=/prometheus
@@ -76,7 +76,7 @@ services:
       GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:?Set GRAFANA_ADMIN_USER in deploy/.env}
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?Set GRAFANA_ADMIN_PASSWORD in deploy/.env}
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     volumes:
       - grafana-data:/var/lib/grafana
       - ./deploy/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
